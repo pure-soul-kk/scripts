@@ -60,7 +60,7 @@ fi
 if [ "$DEVICE_TYPE" == davinci  ];
 then
 DEVICE="REDMI K20 (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
+KERNEL_NAME="PERF+_KERNEL-OSS"
 CODENAME="DAVINCI"
 
 DEFCONFIG="vendor/davinci_perf_defconfig"
@@ -72,7 +72,7 @@ fi
 if [ "$DEVICE_TYPE" == phoenix  ];
 then
 DEVICE="REDMI K30 & POCO X2 (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
+KERNEL_NAME="PERF+_KERNEL-OSS"
 CODENAME="PHOENIX"
 
 DEFCONFIG="vendor/phoenix_perf_defconfig"
