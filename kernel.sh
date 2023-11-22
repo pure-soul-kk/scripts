@@ -182,9 +182,9 @@ build_kernel || error=true
 DATE=$(date +"%Y%m%d-%H%M%S")
 KERVER=$(make kernelversion)
 
-export IMG="$PWD"/out/arch/arm64/boot/Image.gz-dtb
+export IMG="$PWD"/out/arch/arm64/boot/Image.gz
 export dtbo="$PWD"/out/arch/arm64/boot/dtbo.img
-# export dtb="$PWD"/out/arch/arm64/boot/dtb.img
+export dtb="$PWD"/out/arch/arm64/boot/dtb.img
 
         if [ -f "$IMG" ]; then
                 echo -e "$green << Build completed in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds >> \n $white"
@@ -206,7 +206,7 @@ export dtbo="$PWD"/out/arch/arm64/boot/dtbo.img
                 echo -e "$yellow << making kernel zip >> \n $white"
                 cp -r "$IMG" zip/
                 cp -r "$dtbo" zip/
-                # cp -r "$dtb" zip/
+                cp -r "$dtb" zip/
                 cd zip
                 export ZIP="$KERNEL_NAME"-"$KRNL_REL_TAG"-"$CODENAME"
                 zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
