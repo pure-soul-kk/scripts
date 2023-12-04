@@ -47,8 +47,8 @@ rm -rf error.log
 # Devices
 if [ "$DEVICE_TYPE" == courbet  ];
 then
-DEVICE="XIAOMI 11 LITE (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+DEVICE="XIAOMI 11 LITE"
+KERNEL_NAME="PERF+_KERNEL"
 CODENAME="COURBET"
 
 DEFCONFIG="vendor/courbet_perf_defconfig"
@@ -59,8 +59,8 @@ fi
 
 if [ "$DEVICE_TYPE" == davinci  ];
 then
-DEVICE="REDMI K20 (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+DEVICE="REDMI K20"
+KERNEL_NAME="PERF+_KERNEL"
 CODENAME="DAVINCI"
 
 DEFCONFIG="vendor/davinci_perf_defconfig"
@@ -71,8 +71,8 @@ fi
 
 if [ "$DEVICE_TYPE" == phoenix  ];
 then
-DEVICE="REDMI K30 & POCO X2 (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+DEVICE="REDMI K30 & POCO X2"
+KERNEL_NAME="PERF+_KERNEL"
 CODENAME="PHOENIX"
 
 DEFCONFIG="vendor/phoenix_perf_defconfig"
@@ -83,8 +83,8 @@ fi
 
 if [ "$DEVICE_TYPE" == sweet  ];
 then
-DEVICE="REDMI NOTE 10 PRO (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+DEVICE="REDMI NOTE 10 PRO"
+KERNEL_NAME="PERF+_KERNEL"
 CODENAME="SWEET"
 
 DEFCONFIG="vendor/sweet_perf_defconfig"
