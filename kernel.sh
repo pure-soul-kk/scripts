@@ -93,6 +93,18 @@ AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="master"
 fi
 
+if [ "$DEVICE_TYPE" == violet  ];
+then
+DEVICE="REDMI NOTE 7 PRO"
+KERNEL_NAME="PERF+_KERNEL"
+CODENAME="violet"
+
+DEFCONFIG="vendor/violet_perf_defconfig"
+
+AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
+AnyKernelbranch="violet"
+fi
+
 # Kernel build release tag
 KRNL_REL_TAG="$KERNEL_TAG"
 
