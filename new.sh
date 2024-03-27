@@ -87,8 +87,8 @@ DEVICE="REDMI NOTE 10 PRO"
 KERNEL_NAME="PERF+_KERNEL"
 CODENAME="SWEET"
 
-DEFCONFIG="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_COMMON="vendor/sweet.config"
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="vendor/sweet.config"
 
 AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="master"
@@ -185,7 +185,8 @@ export KBUILD_BUILD_USER="$USEER"
 mkdir -p out
 
 make clean && make mrproper
-make "$DEFCONFIG" "$DEFCONFIG_COMMON" O=out
+make "$DEFCONFIG_COMMON" O=out
+make "$DEFCONFIG_DEVICE" O=out
 
 echo -e "$yellow << compiling the kernel >> \n $white"
 tg_post_msg "Successful triggered Compiling kernel for $DEVICE $CODENAME" "$CHATID"
