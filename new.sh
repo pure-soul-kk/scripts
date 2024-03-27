@@ -87,8 +87,8 @@ DEVICE="REDMI NOTE 10 PRO"
 KERNEL_NAME="PERF+_KERNEL"
 CODENAME="SWEET"
 
-DEFCONFIG="vendor/sweet.config"
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_COMMON="vendor/sweet.config"
 
 AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="master"
