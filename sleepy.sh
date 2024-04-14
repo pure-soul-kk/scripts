@@ -51,7 +51,8 @@ DEVICE="XIAOMI 11 LITE (OSS)"
 KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="COURBET"
 
-DEFCONFIG="vendor/courbet_perf_defconfig"
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="vendor/courbet.config"
 
 AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="courbet"
@@ -63,7 +64,8 @@ DEVICE="REDMI K20 (OSS)"
 KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="DAVINCI"
 
-DEFCONFIG="vendor/davinci_perf_defconfig"
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="vendor/davinci.config"
 
 AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="davinci"
@@ -75,7 +77,8 @@ DEVICE="REDMI K30 & POCO X2 (OSS)"
 KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="PHOENIX"
 
-DEFCONFIG="vendor/phoenix_perf_defconfig"
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="vendor/phoenix.config"
 
 AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="phoenix"
@@ -87,10 +90,24 @@ DEVICE="REDMI NOTE 10 PRO (OSS)"
 KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="SWEET"
 
-DEFCONFIG="vendor/sweet_perf_defconfig"
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="vendor/sweet.config"
 
 AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="master"
+fi
+
+if [ "$DEVICE_TYPE" == violet  ];
+then
+DEVICE="REDMI NOTE 7 PRO (OSS)"
+KERNEL_NAME="SLEEPY_KERNEL-OSS"
+CODENAME="violet"
+
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="vendor/violet.config"
+
+AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
+AnyKernelbranch="violet"
 fi
 
 # Kernel build release tag
@@ -131,7 +148,7 @@ tg_error() {
 
 # clang stuff
 		echo -e "$green << cloning clang >> \n $white"
-		git clone --depth=1 https://gitlab.com/itsshashanksp/android_prebuilts_clang_host_linux-x86_clang-r498229b.git  "$HOME"/clang
+		git clone --depth=1 https://gitlab.com/itsshashanksp/android_prebuilts_clang_host_linux-x86_clang-r510928.git  "$HOME"/clang
 
 	export PATH="$HOME/clang/bin:$PATH"
 	export KBUILD_COMPILER_STRING=$("$HOME"/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
@@ -172,7 +189,8 @@ export KBUILD_BUILD_USER="$USEER"
 mkdir -p out
 
 make clean && make mrproper
-make "$DEFCONFIG" O=out
+make "$DEFCONFIG_COMMON" O=out
+make "$DEFCONFIG_DEVICE" O=out
 
 echo -e "$yellow << compiling the kernel >> \n $white"
 tg_post_msg "Successful triggered Compiling kernel for $DEVICE $CODENAME" "$CHATID"
