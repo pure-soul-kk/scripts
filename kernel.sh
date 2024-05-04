@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #
 # Script For Building Android arm64 Kernel
@@ -48,7 +49,7 @@ rm -rf error.log
 if [ "$DEVICE_TYPE" == courbet  ];
 then
 DEVICE="XIAOMI 11 LITE (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="COURBET"
 
 DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
@@ -61,7 +62,7 @@ fi
 if [ "$DEVICE_TYPE" == davinci  ];
 then
 DEVICE="REDMI K20 (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="DAVINCI"
 
 DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
@@ -74,7 +75,7 @@ fi
 if [ "$DEVICE_TYPE" == phoenix  ];
 then
 DEVICE="REDMI K30 & POCO X2 (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="PHOENIX"
 
 DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
@@ -87,7 +88,7 @@ fi
 if [ "$DEVICE_TYPE" == sweet  ];
 then
 DEVICE="REDMI NOTE 10 PRO (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="SWEET"
 
 DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
@@ -97,10 +98,23 @@ AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="master"
 fi
 
+if [ "$DEVICE_TYPE" == sweetk6a  ];
+then
+DEVICE="REDMI NOTE 12 PRO 4G (OSS)"
+KERNEL_NAME="SLEEPY_KERNEL-OSS"
+CODENAME="SWEET-K6A"
+
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="vendor/sweetk6a.config"
+
+AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
+AnyKernelbranch="sweetk6a"
+fi
+
 if [ "$DEVICE_TYPE" == violet  ];
 then
 DEVICE="REDMI NOTE 7 PRO (OSS)"
-KERNEL_NAME="PERF+_KERNEL-OSS"
+KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="violet"
 
 DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
