@@ -105,7 +105,7 @@ KERNEL_NAME="SLEEPY_KERNEL-OSS"
 CODENAME="SWEET-K6A"
 
 DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/sweet.config"
+DEFCONFIG_DEVICE="vendor/sweetk6a.config"
 
 AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
 AnyKernelbranch="sweetk6a"
