@@ -45,90 +45,58 @@ rm -rf error.log
 # USEER = build user
 #
 
-# Devices
-if [ "$DEVICE_TYPE" == courbet  ];
-then
-DEVICE="XIAOMI 11 LITE (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="COURBET"
 
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/courbet.config"
+# Allowed codenames
+ALLOWED_CODENAMES=("davinci" "phoenix" "sweet" "toco" "tucana" "violet")
 
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="courbet"
+# Check if the entered codename is in the allowed list
+if [[ ! " ${ALLOWED_CODENAMES[@]} " =~ " ${DEVICE_TYPE} " ]]; then
+    echo "Error: Invalid codename. Allowed codenames are: ${ALLOWED_CODENAMES[*]}"
+    exit 1
 fi
 
+# Devices
 if [ "$DEVICE_TYPE" == davinci  ];
 then
 DEVICE="REDMI K20 (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
+KERNEL_NAME="LINEAGE_KERNEL-OSS"
 CODENAME="DAVINCI"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/davinci.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="davinci"
 fi
 
 if [ "$DEVICE_TYPE" == phoenix  ];
 then
 DEVICE="REDMI K30 & POCO X2 (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
+KERNEL_NAME="LINEAGE_KERNEL-OSS"
 CODENAME="PHOENIX"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/phoenix.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="phoenix"
 fi
 
 if [ "$DEVICE_TYPE" == sweet  ];
 then
 DEVICE="REDMI NOTE 10 PRO (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
+KERNEL_NAME="LINEAGE_KERNEL-OSS"
 CODENAME="SWEET"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/sweet.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="master"
-fi
-
-if [ "$DEVICE_TYPE" == sweetk6a  ];
-then
-DEVICE="REDMI NOTE 12 PRO 4G (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="SWEET-K6A"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/sweetk6a.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="sweetk6a"
 fi
 
 if [ "$DEVICE_TYPE" == violet  ];
 then
 DEVICE="REDMI NOTE 7 PRO (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
+KERNEL_NAME="LINEAGE_KERNEL-OSS"
 CODENAME="violet"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/violet.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="violet"
 fi
+
+# DEFCONFIG
+DEFCONFIG_DEVICE="vendor/${DEVICE_TYPE}.config"
+DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+
+# AnyKernel3
+AnyKernel="https://github.com/pure-soul-kk/AnyKernel3.git"
+AnyKernelbranch="master"
 
 # Kernel build release tag
 KRNL_REL_TAG="$KERNEL_TAG"
 
 HOSST="sleeping-bag"
-USEER="itsshashanksp"
+USEER="puresoulkk"
 
 # setup telegram env
 export BOT_MSG_URL="https://api.telegram.org/bot$API_BOT/sendMessage"
@@ -162,7 +130,7 @@ tg_error() {
 
 # clang stuff
 		echo -e "$green << cloning clang >> \n $white"
-		git clone --depth=1 https://gitlab.com/itsshashanksp/android_prebuilts_clang_host_linux-x86_clang-r510928.git  "$HOME"/clang
+		git clone --depth=1 -b 15.0 https://gitlab.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r547379.git "$HOME"/clang
 
 	export PATH="$HOME/clang/bin:$PATH"
 	export KBUILD_COMPILER_STRING=$("$HOME"/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
