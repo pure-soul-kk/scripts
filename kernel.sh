@@ -1,9 +1,7 @@
-
 #!/bin/bash
 #
 # Script For Building Android arm64 Kernel
-#
-# Copyright (C) 2021-2023 itsshashanksp <9945shashank@gmail.com>
+# Copyright (C) 2021-2026 itsshashanksp <9945shashank@gmail.com> & pure-soul-kk <krishnakripa34567@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,241 +15,211 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+#
 
-# Setup colour for the script
+set -e
+
+# ── Colour helpers ──────────────────────────────────────────────────────────
 yellow='\033[0;33m'
 white='\033[0m'
 red='\033[0;31m'
 green='\e[0;32m'
 
-# Deleting out "kernel complied" and zip "anykernel" from an old compilation
-echo -e "$green << cleanup >> \n $white"
+# ── Validate inputs (set via GHA env / workflow_dispatch) ───────────────────
+ALLOWED_CODENAMES=("davinci" "phoenix" "sweet" "toco" "tucana" "violet")
 
-rm -rf out
-rm -rf zip
-rm -rf error.log
-
-# Now u can chose which things need to be modified
-#
-# DEVICE = your device codename
-# KERNEL_NAME = the name of ur kranul
-#
-# DEFCONFIG = defconfig that will be used to compile the kernel
-#
-# AnyKernel = the url of your modified anykernel script
-# AnyKernelbranch = the branch of your modified anykernel script
-#
-# HOSST = build host
-# USEER = build user
-#
-
-# Devices
-if [ "$DEVICE_TYPE" == courbet  ];
-then
-DEVICE="XIAOMI 11 LITE (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="COURBET"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/courbet.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="courbet"
+if [[ -z "$DEVICE_TYPE" ]]; then
+    echo -e "${red}Error: DEVICE_TYPE env variable is not set.${white}"
+    exit 1
 fi
 
-if [ "$DEVICE_TYPE" == davinci  ];
-then
-DEVICE="REDMI K20 (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="DAVINCI"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/davinci.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="davinci"
+if [[ ! " ${ALLOWED_CODENAMES[*]} " =~ " ${DEVICE_TYPE} " ]]; then
+    echo -e "${red}Error: Invalid codename '$DEVICE_TYPE'. Allowed: ${ALLOWED_CODENAMES[*]}${white}"
+    exit 1
 fi
 
-if [ "$DEVICE_TYPE" == phoenix  ];
-then
-DEVICE="REDMI K30 & POCO X2 (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="PHOENIX"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/phoenix.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="phoenix"
+# ── Validate required secrets ───────────────────────────────────────────────
+if [[ -z "$API_BOT" || -z "$CHATID" ]]; then
+    echo -e "${red}Error: API_BOT and CHATID must be set as environment variables / secrets.${white}"
+    exit 1
 fi
 
-if [ "$DEVICE_TYPE" == sweet  ];
-then
-DEVICE="REDMI NOTE 10 PRO (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="SWEET"
+# ── Device map ──────────────────────────────────────────────────────────────
+declare -A DEVICE_NAMES=(
+    [davinci]="REDMI K20 (OSS)"
+    [phoenix]="REDMI K30 & POCO X2 (OSS)"
+    [sweet]="REDMI NOTE 10 PRO (OSS)"
+    [violet]="REDMI NOTE 7 PRO (OSS)"
+    [toco]="TOCO"
+    [tucana]="TUCANA"
+)
 
+DEVICE="${DEVICE_NAMES[$DEVICE_TYPE]}"
+CODENAME="${DEVICE_TYPE^^}"   # uppercase
+
+# ── Defconfigs ──────────────────────────────────────────────────────────────
 DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/sweet.config"
+DEFCONFIG_DEVICE="vendor/${DEVICE_TYPE}.config"
 
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="master"
-fi
+# ── Kernel tag (fallback to date if not set) ────────────────────────────────
+KERNEL_TAG="${KERNEL_TAG:-$(date '+%Y%m%d')}"
 
-if [ "$DEVICE_TYPE" == sweetk6a  ];
-then
-DEVICE="REDMI NOTE 12 PRO 4G (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="SWEET-K6A"
+# ── AnyKernel3 ──────────────────────────────────────────────────────────────
+AnyKernel="https://github.com/pure-soul-kk/AnyKernel3.git"
+AnyKernelBranch="master"
 
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/sweetk6a.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="sweetk6a"
-fi
-
-if [ "$DEVICE_TYPE" == violet  ];
-then
-DEVICE="REDMI NOTE 7 PRO (OSS)"
-KERNEL_NAME="SLEEPY_KERNEL-OSS"
-CODENAME="violet"
-
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
-DEFCONFIG_DEVICE="vendor/violet.config"
-
-AnyKernel="https://github.com/itsshashanksp/AnyKernel3.git"
-AnyKernelbranch="violet"
-fi
-
-# Kernel build release tag
-KRNL_REL_TAG="$KERNEL_TAG"
-
-HOSST="sleeping-bag"
-USEER="itsshashanksp"
-
-# setup telegram env
-export BOT_MSG_URL="https://api.telegram.org/bot$API_BOT/sendMessage"
-export BOT_BUILD_URL="https://api.telegram.org/bot$API_BOT/sendDocument"
-
-tg_post_msg() {
-        curl -s -X POST "$BOT_MSG_URL" -d chat_id="$2" \
-        -d "parse_mode=html" \
-        -d text="$1"
-}
-
-tg_post_build() {
-        #Post MD5Checksum alongwith for easeness
-        MD5CHECK=$(md5sum "$1" | cut -d' ' -f1)
-
-        #Show the Checksum alongwith caption
-        curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
-        -F chat_id="$2" \
-        -F "disable_web_page_preview=true" \
-        -F "parse_mode=html" \
-        -F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
-}
-
-tg_error() {
-        curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
-        -F chat_id="$2" \
-        -F "disable_web_page_preview=true" \
-        -F "parse_mode=html" \
-        -F caption="$3Failed to build , check <code>error.log</code>"
-}
-
-# clang stuff
-		echo -e "$green << cloning clang >> \n $white"
-		git clone --depth=1 https://gitlab.com/itsshashanksp/android_prebuilts_clang_host_linux-x86_clang-r510928.git  "$HOME"/clang
-
-	export PATH="$HOME/clang/bin:$PATH"
-	export KBUILD_COMPILER_STRING=$("$HOME"/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
-
-# Setup build process
-
-build_kernel() {
-Start=$(date +"%s")
-
-	make -j$(nproc --all) O=out \
-                              ARCH=arm64 \
-                              LLVM=1 \
-                              LLVM_IAS=1 \
-                              AR=llvm-ar \
-                              NM=llvm-nm \
-                              LD=ld.lld \
-                              OBJCOPY=llvm-objcopy \
-                              OBJDUMP=llvm-objdump \
-                              STRIP=llvm-strip \
-                              CC=clang \
-                              CLANG_TRIPLE=aarch64-linux-gnu- \
-                              CROSS_COMPILE=aarch64-linux-android- \
-                              CROSS_COMPILE_ARM32=arm-linux-androideabi-  2>&1 | tee error.log
-
-End=$(date +"%s")
-Diff=$(($End - $Start))
-}
-
-# Let's start
-echo -e "$green << doing pre-compilation process >> \n $white"
+# ── Build identity ──────────────────────────────────────────────────────────
+export KBUILD_BUILD_HOST="sleeping-bag"
+export KBUILD_BUILD_USER="puresoulkk"
+export TZ=Asia/Kolkata
 export ARCH=arm64
 export SUBARCH=arm64
 export HEADER_ARCH=arm64
 
-export KBUILD_BUILD_HOST="$HOSST"
-export KBUILD_BUILD_USER="$USEER"
+# ── Telegram helpers ────────────────────────────────────────────────────────
+BOT_MSG_URL="https://api.telegram.org/bot${API_BOT}/sendMessage"
+BOT_BUILD_URL="https://api.telegram.org/bot${API_BOT}/sendDocument"
+STICKER_ID="CAACAgIAAxkBAAFHPGBp3vv2alKfVBQ4v7AaHPF97GMSKAACGTEAArx_wUuGnBCRzvYJbTsE"
 
+tg_sticker() {
+    curl -s -X POST "https://api.telegram.org/bot${API_BOT}/sendSticker" \
+        -d sticker="$STICKER_ID" \
+        -d chat_id="$CHATID" > /dev/null
+}
+
+tg_post_msg() {
+    curl -s -X POST "$BOT_MSG_URL" \
+        -d chat_id="$CHATID" \
+        -d "parse_mode=Markdown" \
+        -d text="$1" > /dev/null
+}
+
+tg_post_build() {
+    local file="$1"
+    local caption="$2"
+    local SHA256CHECK
+    SHA256CHECK=$(sha256sum "$file" | cut -d' ' -f1)
+    curl --progress-bar -F document=@"$file" "$BOT_BUILD_URL" \
+        -F chat_id="$CHATID" \
+        -F "disable_web_page_preview=true" \
+        -F "parse_mode=Markdown" \
+        -F caption="${caption} | *SHA256:* \`${SHA256CHECK}\`"
+}
+
+tg_error() {
+    local file="$1"
+    local caption="$2"
+    curl --progress-bar -F document=@"$file" "$BOT_BUILD_URL" \
+        -F chat_id="$CHATID" \
+        -F "disable_web_page_preview=true" \
+        -F "parse_mode=Markdown" \
+        -F caption="${caption} Failed to build — check error.log"
+}
+
+# ── Cleanup ──────────────────────────────────────────────────────────────────
+echo -e "${green}<< cleanup >>${white}"
+rm -rf out zip error.log
+
+# ── Clang setup (Google prebuilt tarball) ────────────────────────────────────
+CLANG_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android16-qpr2-release/clang-r563880c.tar.gz"
+CLANG_DIR="$HOME/clang"
+
+echo -e "${green}<< fetching clang >>${white}"
+if [[ ! -f "$CLANG_DIR/bin/clang" ]]; then
+    mkdir -p "$CLANG_DIR"
+    echo "Downloading clang tarball..."
+    if ! curl -fL --retry 3 --retry-delay 5 -o /tmp/clang.tar.gz "$CLANG_URL"; then
+        echo -e "${red}Error: Failed to download clang from Google. Check URL or network access.${white}"
+        exit 1
+    fi
+    echo "Extracting clang..."
+    # Google +archive tarballs have no top-level directory — extract directly into CLANG_DIR
+    tar -xzf /tmp/clang.tar.gz -C "$CLANG_DIR"
+    rm -f /tmp/clang.tar.gz
+    if [[ ! -f "$CLANG_DIR/bin/clang" ]]; then
+        echo -e "${red}Error: clang binary not found after extraction. Tarball structure may have changed.${white}"
+        exit 1
+    fi
+fi
+export PATH="$CLANG_DIR/bin:$PATH"
+export KBUILD_COMPILER_STRING=$("$CLANG_DIR/bin/clang" --version \
+    | head -n 1 \
+    | perl -pe 's/\(http.*?\)//gs' \
+    | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
+
+# ── Defconfig ───────────────────────────────────────────────────────────────
+echo -e "${green}<< doing pre-compilation process >>${white}"
 mkdir -p out
-
 make clean && make mrproper
-make "$DEFCONFIG_COMMON" O=out
-make "$DEFCONFIG_DEVICE" O=out
 
-echo -e "$yellow << compiling the kernel >> \n $white"
-tg_post_msg "Successful triggered Compiling kernel for $DEVICE $CODENAME" "$CHATID"
+# Merge base + device defconfig in a single make invocation
+make O=out ARCH=arm64 \
+    "$DEFCONFIG_COMMON" \
+    "$DEFCONFIG_DEVICE"
 
-build_kernel || error=true
+# ── Build ────────────────────────────────────────────────────────────────────
+echo -e "${yellow}<< compiling the kernel >>${white}"
+tg_sticker
+tg_post_msg "⚙️ Triggered kernel build for *${DEVICE}* (\`${CODENAME}\`)"
 
-DATE=$(date +"%Y%m%d-%H%M%S")
-KERVER=$(make kernelversion)
+Start=$(date +"%s")
 
-export IMG="$PWD"/out/arch/arm64/boot/Image.gz
-export dtbo="$PWD"/out/arch/arm64/boot/dtbo.img
-export dtb="$PWD"/out/arch/arm64/boot/dtb.img
+make -j$(nproc --all) O=out \
+    ARCH=arm64 \
+    LLVM=1 \
+    LLVM_IAS=1 \
+    AR=llvm-ar \
+    NM=llvm-nm \
+    LD=ld.lld \
+    OBJCOPY=llvm-objcopy \
+    OBJDUMP=llvm-objdump \
+    STRIP=llvm-strip \
+    CC=clang \
+    CLANG_TRIPLE=aarch64-linux-gnu- \
+    CROSS_COMPILE=aarch64-linux-gnu- \
+    CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+    2>&1 | tee error.log
 
-        if [ -f "$IMG" ]; then
-                echo -e "$green << Build completed in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds >> \n $white"
-        else
-                echo -e "$red << Failed to compile the kernel , Check up to find the error >>$white"
-                tg_post_msg "Kernel failed to compile uploading error log"
-                tg_error "error.log" "$CHATID"
-                tg_post_msg "done" "$CHATID"
-                rm -rf out
-                rm -rf testing.log
-                rm -rf error.log
-                rm -rf zipsigner-3.0.jar
-                exit 1
-        fi
+End=$(date +"%s")
+Diff=$(( End - Start ))
 
-        if [ -f "$IMG" ]; then
-                echo -e "$green << cloning AnyKernel from your repo >> \n $white"
-                git clone --depth=1 "$AnyKernel" --single-branch -b "$AnyKernelbranch" zip
-                echo -e "$yellow << making kernel zip >> \n $white"
-                cp -r "$IMG" zip/
-                cp -r "$dtbo" zip/
-                cp -r "$dtb" zip/
-                cd zip
-                export ZIP="$KERNEL_NAME"-"$KRNL_REL_TAG"-"$CODENAME"
-                zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
-                curl -sLo zipsigner-3.0.jar https://gitlab.com/itsshashanksp/zipsigner/-/raw/master/bin/zipsigner-3.0-dexed.jar
-                java -jar zipsigner-3.0.jar "$ZIP".zip "$ZIP"-signed.zip
-                tg_post_msg "Kernel successfully compiled uploading ZIP" "$CHATID"
-                tg_post_build "$ZIP"-signed.zip "$CHATID"
-                tg_post_msg "done" "$CHATID"
-                cd ..
-                rm -rf error.log
-                rm -rf out
-                rm -rf zip
-                rm -rf testing.log
-                rm -rf zipsigner-3.0.jar
-                exit
-        fi
+# ── Artifact paths ───────────────────────────────────────────────────────────
+IMG="$PWD/out/arch/arm64/boot/Image.gz"
+DTBO="$PWD/out/arch/arm64/boot/dtbo.img"
+DTB="$PWD/out/arch/arm64/boot/dtb.img"
+
+# ── Check build result ───────────────────────────────────────────────────────
+if [[ ! -f "$IMG" ]]; then
+    echo -e "${red}<< Build failed — check error.log >>${white}"
+    tg_post_msg "❌ Kernel build failed for *${DEVICE}* (\`${CODENAME}\`) — uploading error log"
+    tg_error "error.log" "❌"
+    tg_post_msg "done"
+    rm -rf out error.log
+    exit 1
+fi
+
+echo -e "${green}<< Build completed in $(( Diff / 60 ))m $(( Diff % 60 ))s >>${white}"
+
+# ── Package ──────────────────────────────────────────────────────────────────
+echo -e "${green}<< cloning AnyKernel3 >>${white}"
+git clone --depth=1 "$AnyKernel" --single-branch -b "$AnyKernelBranch" zip
+
+cp "$IMG"  zip/
+cp "$DTBO" zip/
+cp "$DTB"  zip/
+
+# Patch anykernel.sh device name
+sed -i "s/device.name1=.*/device.name1=${DEVICE_TYPE}/" zip/anykernel.sh
+sed -i "s/device.name2=.*/device.name2=${DEVICE_TYPE}in/" zip/anykernel.sh
+
+echo -e "${yellow}<< making kernel zip >>${white}"
+ZIP="LineageOS-${KERNEL_TAG}-${CODENAME}-$(date '+%Y%m%d-%H%M').zip"
+(cd zip && zip -r9 "../$ZIP" . -x .git README.md LICENSE '*placeholder')
+
+# ── Upload ───────────────────────────────────────────────────────────────────
+tg_post_msg "✅ Kernel compiled for *${DEVICE}* in $(( Diff / 60 ))m $(( Diff % 60 ))s — uploading ZIP"
+tg_post_build "$ZIP" "✅ *${DEVICE}* | \`${KERNEL_TAG}\`"
+tg_post_msg "done"
+
+# ── Cleanup ──────────────────────────────────────────────────────────────────
+rm -rf out zip error.log
