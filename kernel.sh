@@ -98,7 +98,7 @@ tg_error() {
 
 # KSU Stuff
 echo -e " || Patching KernelSU || "
-curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.5
             echo "CONFIG_KPROBES=y" >> $DEVICE_DEFCONFIG_FILE
             echo "CONFIG_HAVE_KPROBES=y" >> $DEVICE_DEFCONFIG_FILE
             echo "CONFIG_KPROBE_EVENTS=y" >> $DEVICE_DEFCONFIG_FILE
