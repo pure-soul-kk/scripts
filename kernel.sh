@@ -53,6 +53,7 @@ KERNEL_NAME="VANTOM_KERNEL-OSS"
 CODENAME="SWEET"
 
 DEFCONFIG="sweet_defconfig"
+DEVICE_DEFCONFIG_FILE="$HOME/work/android_kernel_xiaomi_sm6150/android_kernel_xiaomi_sm6150/arch/arm64/configs/$DEFCONFIG"
 
 AnyKernel="https://github.com/pure-soul-kk/AnyKernel3.git"
 AnyKernelbranch="vantom"
@@ -93,6 +94,30 @@ tg_error() {
         -F "parse_mode=html" \
         -F caption="$3Failed to build , check <code>error.log</code>"
 }
+
+
+# KSU Stuff
+msg " • 🌸 Patching KernelSU 🌸 "
+curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+            echo "CONFIG_KPROBES=y" >> $DEVICE_DEFCONFIG_FILE
+            echo "CONFIG_HAVE_KPROBES=y" >> $DEVICE_DEFCONFIG_FILE
+            echo "CONFIG_KPROBE_EVENTS=y" >> $DEVICE_DEFCONFIG_FILE
+KSU_GIT_VERSION=$(cd KernelSU && git rev-list --count HEAD)
+KERNELSU_VERSION=$(($KSU_GIT_VERSION + 10000 + 200))
+msg " • 🌸 KernelSU version: $KERNELSU_VERSION 🌸 "
+
+# PATCH KERNELSU
+msg " • 🌸 Applying patches || "
+
+apply_patchs () {
+for patch_file in $WORKDIR/patchs/*.patch
+	do
+	patch -p1 < "$patch_file"
+done
+}
+apply_patchs
+
+sed -i "/CONFIG_LOCALVERSION=\"/s/.$/-KSU-$KERNELSU_VERSION\"/" $DEVICE_DEFCONFIG_FILE
 
 # clang stuff
 		echo -e "$green << cloning clang >> \n $white"
