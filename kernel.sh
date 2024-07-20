@@ -97,17 +97,17 @@ tg_error() {
 
 
 # KSU Stuff
-msg " • 🌸 Patching KernelSU 🌸 "
+echo -e " || Patching KernelSU || "
 curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
             echo "CONFIG_KPROBES=y" >> $DEVICE_DEFCONFIG_FILE
             echo "CONFIG_HAVE_KPROBES=y" >> $DEVICE_DEFCONFIG_FILE
             echo "CONFIG_KPROBE_EVENTS=y" >> $DEVICE_DEFCONFIG_FILE
 KSU_GIT_VERSION=$(cd KernelSU && git rev-list --count HEAD)
 KERNELSU_VERSION=$(($KSU_GIT_VERSION + 10000 + 200))
-msg " • 🌸 KernelSU version: $KERNELSU_VERSION 🌸 "
+echo -e " || KernelSU version: $KERNELSU_VERSION || "
 
 # PATCH KERNELSU
-msg " • 🌸 Applying patches || "
+echo -e " || Applying patches || "
 
 apply_patchs () {
 for patch_file in $WORKDIR/patchs/*.patch
