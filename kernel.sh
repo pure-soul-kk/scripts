@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #
 # Script For Building Android arm64 Kernel
@@ -59,34 +58,33 @@ fi
 if [ "$DEVICE_TYPE" == davinci  ];
 then
 DEVICE="REDMI K20 (OSS)"
-KERNEL_NAME="LINEAGE_KERNEL-OSS"
+KERNEL_NAME="VANTOM_KERNEL-OSS"
 CODENAME="DAVINCI"
 fi
 
 if [ "$DEVICE_TYPE" == phoenix  ];
 then
 DEVICE="REDMI K30 & POCO X2 (OSS)"
-KERNEL_NAME="LINEAGE_KERNEL-OSS"
+KERNEL_NAME="VANTOM_KERNEL-OSS"
 CODENAME="PHOENIX"
 fi
 
 if [ "$DEVICE_TYPE" == sweet  ];
 then
 DEVICE="REDMI NOTE 10 PRO (OSS)"
-KERNEL_NAME="LINEAGE_KERNEL-OSS"
+KERNEL_NAME="VANTOM_KERNEL-OSS"
 CODENAME="SWEET"
 fi
 
 if [ "$DEVICE_TYPE" == violet  ];
 then
 DEVICE="REDMI NOTE 7 PRO (OSS)"
-KERNEL_NAME="LINEAGE_KERNEL-OSS"
+KERNEL_NAME="VANTOM_KERNEL-OSS"
 CODENAME="violet"
 fi
 
 # DEFCONFIG
-DEFCONFIG_DEVICE="vendor/${DEVICE_TYPE}.config"
-DEFCONFIG_COMMON="vendor/sdmsteppe-perf_defconfig"
+DEFCONFIG_DEVICE="${DEVICE_TYPE}_defconfig"
 
 # AnyKernel3
 AnyKernel="https://github.com/pure-soul-kk/AnyKernel3.git"
@@ -171,7 +169,6 @@ export KBUILD_BUILD_USER="$USEER"
 mkdir -p out
 
 make clean && make mrproper
-make "$DEFCONFIG_COMMON" O=out
 make "$DEFCONFIG_DEVICE" O=out
 
 echo -e "$yellow << compiling the kernel >> \n $white"
