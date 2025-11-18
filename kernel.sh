@@ -165,6 +165,7 @@ export HEADER_ARCH=arm64
 
 export KBUILD_BUILD_HOST="$HOSST"
 export KBUILD_BUILD_USER="$USEER"
+export TZ=Asia/Kolkata
 
 mkdir -p out
 
@@ -207,10 +208,8 @@ export dtb="$PWD"/out/arch/arm64/boot/dtb.img
                 cd zip
                 export ZIP="$KERNEL_NAME"-"$KRNL_REL_TAG"-"$CODENAME"
                 zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
-                curl -sLo zipsigner-3.0.jar https://gitlab.com/itsshashanksp/zipsigner/-/raw/master/bin/zipsigner-3.0-dexed.jar
-                java -jar zipsigner-3.0.jar "$ZIP".zip "$ZIP"-signed.zip
                 tg_post_msg "Kernel successfully compiled uploading ZIP" "$CHATID"
-                tg_post_build "$ZIP"-signed.zip "$CHATID"
+                tg_post_build "$ZIP".zip "$CHATID"
                 tg_post_msg "done" "$CHATID"
                 cd ..
                 rm -rf error.log
