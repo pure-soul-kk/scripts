@@ -90,9 +90,6 @@ DEFCONFIG_DEVICE="${DEVICE_TYPE}_defconfig"
 AnyKernel="https://github.com/pure-soul-kk/AnyKernel3.git"
 AnyKernelbranch="master"
 
-# Kernel build release tag
-KRNL_REL_TAG="$KERNEL_TAG"
-
 HOSST="sleeping-bag"
 USEER="puresoulkk"
 
@@ -206,7 +203,7 @@ export dtb="$PWD"/out/arch/arm64/boot/dtb.img
                 cp -r "$dtbo" zip/
                 cp -r "$dtb" zip/
                 cd zip
-                export ZIP="$KERNEL_NAME"-"$KRNL_REL_TAG"-"$CODENAME"
+                export ZIP="$KERNEL_NAME-$KERNEL_TAG-$CODENAME"
                 zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
                 tg_post_msg "Kernel successfully compiled uploading ZIP" "$CHATID"
                 tg_post_build "$ZIP".zip "$CHATID"
