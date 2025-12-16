@@ -203,10 +203,10 @@ export dtb="$PWD"/out/arch/arm64/boot/dtb.img
                 cp -r "$dtbo" zip/
                 cp -r "$dtb" zip/
                 cd zip
-                export ZIP="$KERNEL_NAME-$KERNEL_TAG-$CODENAME-$(date '+%Y%m%d-%H%M')"
+                export ZIP="${KERNEL_NAME}-${KERNEL_TAG}-${CODENAME}-$(date '+%Y%m%d-%H%M').zip"
                 zip -r9 "$ZIP" * -x .git README.md LICENSE *placeholder
                 tg_post_msg "Kernel successfully compiled uploading ZIP" "$CHATID"
-                tg_post_build "$ZIP".zip "$CHATID"
+                tg_post_build "$ZIP" "$CHATID"
                 tg_post_msg "done" "$CHATID"
                 cd ..
                 rm -rf error.log
