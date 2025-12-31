@@ -112,7 +112,7 @@ tg_post_build() {
         -F chat_id="$2" \
         -F "disable_web_page_preview=true" \
         -F "parse_mode=Markdown" \
-        -F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | *SHA256 Checksum :* \`$SHA256CHECK\`
+        -F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | *SHA256 Checksum :* \`$SHA256CHECK\`"
 }
 
 tg_error() {
