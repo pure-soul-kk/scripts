@@ -105,14 +105,14 @@ tg_post_msg() {
 
 tg_post_build() {
         #Post MD5Checksum alongwith for easeness
-        MD5CHECK=$(md5sum "$1" | cut -d' ' -f1)
+        SHA256CHECK=$(sha256sum "$1" | cut -d' ' -f1)
 
         #Show the Checksum alongwith caption
         curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
         -F chat_id="$2" \
         -F "disable_web_page_preview=true" \
         -F "parse_mode=Markdown" \
-        -F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
+        -F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | *SHA256 Checksum :* \`$SHA256CHECK\`
 }
 
 tg_error() {
