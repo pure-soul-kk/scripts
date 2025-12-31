@@ -99,7 +99,7 @@ export BOT_BUILD_URL="https://api.telegram.org/bot$API_BOT/sendDocument"
 
 tg_post_msg() {
         curl -s -X POST "$BOT_MSG_URL" -d chat_id="$2" \
-        -d "parse_mode=html" \
+        -d "parse_mode=Markdown" \
         -d text="$1"
 }
 
@@ -111,7 +111,7 @@ tg_post_build() {
         curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
         -F chat_id="$2" \
         -F "disable_web_page_preview=true" \
-        -F "parse_mode=html" \
+        -F "parse_mode=Markdown" \
         -F caption="$3 build finished in $(($Diff / 60)) minutes and $(($Diff % 60)) seconds | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
 }
 
@@ -119,7 +119,7 @@ tg_error() {
         curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
         -F chat_id="$2" \
         -F "disable_web_page_preview=true" \
-        -F "parse_mode=html" \
+        -F "parse_mode=Markdown" \
         -F caption="$3Failed to build , check <code>error.log</code>"
 }
 
