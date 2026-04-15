@@ -97,6 +97,13 @@ USEER="puresoulkk"
 export BOT_MSG_URL="https://api.telegram.org/bot$API_BOT/sendMessage"
 export BOT_BUILD_URL="https://api.telegram.org/bot$API_BOT/sendDocument"
 
+STICKER_ID="CAACAgIAAxkBAAFHPGBp3vv2alKfVBQ4v7AaHPF97GMSKAACGTEAArx_wUuGnBCRzvYJbTsE"
+
+tg_sticker() {
+	     curl -s -X POST "https://api.telegram.org/bot${API_BOT}/sendSticker" \
+		-d sticker="$STICKER_ID" \
+		-d chat_id="$CHATID"
+
 tg_post_msg() {
         curl -s -X POST "$BOT_MSG_URL" -d chat_id="$2" \
         -d "parse_mode=Markdown" \
@@ -170,6 +177,7 @@ make clean && make mrproper
 make "$DEFCONFIG_DEVICE" O=out
 
 echo -e "$yellow << compiling the kernel >> \n $white"
+tg_sticker
 tg_post_msg "Successful triggered Compiling kernel for $DEVICE $CODENAME" "$CHATID"
 
 build_kernel || error=true
