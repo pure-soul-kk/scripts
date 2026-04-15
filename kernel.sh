@@ -99,8 +99,8 @@ export BOT_BUILD_URL="https://api.telegram.org/bot$API_BOT/sendDocument"
 
 STICKER_ID="CAACAgIAAxkBAAFHPGBp3vv2alKfVBQ4v7AaHPF97GMSKAACGTEAArx_wUuGnBCRzvYJbTsE"
 
-tg_sticker() {
-	     curl -s -X POST "https://api.telegram.org/bot${API_BOT}/sendSticker" \
+function tg_sticker() {
+	curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendSticker" \
 		-d sticker="$STICKER_ID" \
 		-d chat_id="$CHATID"
 
